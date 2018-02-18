@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="buttonGroup1">
     </Component>
@@ -78,9 +78,6 @@
     <Container class="javax.swing.JDialog" name="about">
       <Properties>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[580, 390]"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[580, 390]"/>
         </Property>
         <Property name="resizable" type="boolean" value="false"/>
@@ -425,7 +422,7 @@
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="352" max="32767" attributes="0"/>
+                      <Component id="jscroolpane" pref="352" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <Component id="add" pref="289" max="32767" attributes="0"/>
@@ -474,7 +471,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="stergere" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane1" min="-2" pref="377" max="-2" attributes="0"/>
+                  <Component id="jscroolpane" min="-2" pref="377" max="-2" attributes="0"/>
               </Group>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
@@ -495,7 +492,7 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+    <Container class="javax.swing.JScrollPane" name="jscroolpane">
       <Properties>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[352, 700]"/>
@@ -507,27 +504,46 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JList" name="l">
+        <Component class="javax.swing.JTable" name="t">
           <Properties>
-            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-              <StringArray count="5">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
-                <StringItem index="4" value="Item 5"/>
-              </StringArray>
+            <Property name="autoCreateRowSorter" type="boolean" value="true"/>
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+              <Table columnCount="4" rowCount="4">
+                <Column editable="true" title="Title 1" type="java.lang.Object"/>
+                <Column editable="true" title="Title 2" type="java.lang.Object"/>
+                <Column editable="true" title="Title 3" type="java.lang.Object"/>
+                <Column editable="true" title="Title 4" type="java.lang.Object"/>
+              </Table>
+            </Property>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="1">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
+            </Property>
+            <Property name="columnSelectionAllowed" type="boolean" value="true"/>
+            <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
+              <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
             </Property>
           </Properties>
-          <Events>
-            <EventHandler event="componentAdded" listener="java.awt.event.ContainerListener" parameters="java.awt.event.ContainerEvent" handler="lComponentAdded"/>
-            <EventHandler event="ancestorAdded" listener="javax.swing.event.AncestorListener" parameters="javax.swing.event.AncestorEvent" handler="lAncestorAdded"/>
-            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="lKeyPressed"/>
-            <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="lValueChanged"/>
-          </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

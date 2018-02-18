@@ -6,6 +6,8 @@
 package AgendaTelefon;
 
 import AgendaTelefon.Abonat;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +30,7 @@ public class CarteDeTelefon extends AbstractListModel {
     public Object getElementAt(int i) {
         return ct.get(i);
     }
-
+    
 // METODE DE VERIFICARE PRE-ADD
     public boolean verifNume(String nume) {
         if (!nume.matches("[a-zA-z]+")) {
@@ -77,15 +79,19 @@ public class CarteDeTelefon extends AbstractListModel {
 
     public boolean verificaTel(String tel) {
         if (tel == null) {
-           // System.out.println("e Gol");
+             System.out.println("e Gol");
             return false;
         }
         if (tel.length() != 10) {
-           // System.out.println("Lungimea nu e buna");
+             System.out.println("Lungimea nu e buna");
             return false;
         }
         if (!tel.substring(0, 2).equals("07") && !tel.substring(0, 3).equals("021")) {
-            //System.out.println("Nu e numar de pe Terra!");
+            System.out.println("Nu e numar de pe Terra!");
+            return false;
+        }
+        if (tel.matches("[a-zA-z]+")) {
+            System.out.println("Nu contine doar cifre!");
             return false;
         }
         return true;
@@ -98,6 +104,14 @@ public class CarteDeTelefon extends AbstractListModel {
 
     }
 
+    /* public void veriff(String s){
+        
+       for (int i=0; i< ct.size(); i++){
+            if(ct.indexOf(i).getName().equals(s)){
+                
+            }
+        }
+    }*/
     public void adauga(String n, String p, nrTel t, String cnp) {
         adauga(new Abonat(n, p, t, cnp));
     }

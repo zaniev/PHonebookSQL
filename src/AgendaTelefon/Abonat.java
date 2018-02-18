@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 import java.lang.Exception;
 import java.util.Comparator;
 
-public class Abonat implements Comparable {
+public class Abonat {
 
     private String nume;
     private String prenume;
@@ -81,9 +81,5 @@ public class Abonat implements Comparable {
         return cnp;
     }
 
-    @Override
-    public int compareTo(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+   
 }

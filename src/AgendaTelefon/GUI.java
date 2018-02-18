@@ -10,14 +10,25 @@ import javax.swing.event.ListDataListener;
 import AgendaTelefon.CarteDeTelefon;
 import javax.swing.JList;
 import AgendaTelefon.Abonat;
+import java.awt.Component;
 import java.awt.Toolkit;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import java.sql.*;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -25,6 +36,25 @@ import javax.swing.JOptionPane;
  */
 public class GUI extends javax.swing.JFrame {
 
+    TimerTask task = new TimerTask() {
+
+        private int pozaCurenta;
+        private File[] poze;
+
+        public void run() {
+            if (pozaCurenta < poze.length - 1) {
+                pozaCurenta++;
+                ImageIcon i = new ImageIcon(poze[pozaCurenta].getAbsolutePath());
+                add.setIcon(i);
+                add.setText("");
+            }
+            if (pozaCurenta == poze.length - 1) {
+                ImageIcon i = new ImageIcon(poze[0].getAbsolutePath());
+                add.setIcon(i);
+                add.setText("");
+            }
+        }
+    };
     private CarteDeTelefon model = new CarteDeTelefon();
 
     public void golireText() {
@@ -35,9 +65,53 @@ public class GUI extends javax.swing.JFrame {
         prenume.setText("");
     }
 
+    public void executeQuery(String query, String message) {
+        try {
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost/phonebookapp",
+                    "root",
+                    ""
+            );
+            try {
+                Statement st;
+                st = con.createStatement();
+                if (st.executeUpdate(query) == 1) {
+                    JOptionPane.showMessageDialog(null, "Data " + message + " Inregistrata cu succes!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Data " + message + " nesalvata!");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     public GUI() {
-        initComponents();
-        l.setModel(model);
+
+        try {
+            initComponents();
+            com.mysql.jdbc.Driver d;
+            Connection c = DriverManager.getConnection(
+                    "jdbc:mysql://localhost/phonebookapp",
+                    "root",
+                    ""
+            );
+            Statement s = c.createStatement(
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+
+            ResultSet r = s.executeQuery("SELECT * from thelist");
+            ResultSetTableModel model = new ResultSetTableModel(r);
+
+            t.setModel(model);
+        } catch (SQLException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -68,8 +142,8 @@ public class GUI extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        l = new javax.swing.JList<>();
+        jscroolpane = new javax.swing.JScrollPane();
+        t = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -151,7 +225,6 @@ public class GUI extends javax.swing.JFrame {
         );
 
         about.setMinimumSize(new java.awt.Dimension(580, 390));
-        about.setPreferredSize(new java.awt.Dimension(580, 390));
         about.setResizable(false);
 
         jButton1.setText("Inchide");
@@ -286,39 +359,31 @@ public class GUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jScrollPane1.setMaximumSize(new java.awt.Dimension(352, 700));
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(352, 200));
+        jscroolpane.setMaximumSize(new java.awt.Dimension(352, 700));
+        jscroolpane.setMinimumSize(new java.awt.Dimension(352, 200));
 
-        l.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        l.addContainerListener(new java.awt.event.ContainerAdapter() {
-            public void componentAdded(java.awt.event.ContainerEvent evt) {
-                lComponentAdded(evt);
+        t.setAutoCreateRowSorter(true);
+        t.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
             }
-        });
-        l.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-                lAncestorAdded(evt);
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-        });
-        l.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                lKeyPressed(evt);
-            }
-        });
-        l.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                lValueChanged(evt);
-            }
-        });
-        jScrollPane1.setViewportView(l);
+        ));
+        t.setColumnSelectionAllowed(true);
+        t.getTableHeader().setReorderingAllowed(false);
+        jscroolpane.setViewportView(t);
+        t.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (t.getColumnModel().getColumnCount() > 0) {
+            t.getColumnModel().getColumn(0).setResizable(false);
+            t.getColumnModel().getColumn(1).setResizable(false);
+            t.getColumnModel().getColumn(2).setResizable(false);
+            t.getColumnModel().getColumn(3).setResizable(false);
+        }
 
         jLabel1.setText("Nume");
 
@@ -507,7 +572,7 @@ public class GUI extends javax.swing.JFrame {
                                 .addComponent(cautare, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(stergere, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)))
                         .addGap(38, 38, 38)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
+                        .addComponent(jscroolpane, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
@@ -545,7 +610,7 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(cautare)
                         .addGap(18, 18, 18)
                         .addComponent(stergere))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jscroolpane, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 28, Short.MAX_VALUE)
@@ -563,34 +628,72 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void adaugareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adaugareActionPerformed
-        String nrtelefon = tel.getText();
-        nrTel temp = new nrTel(nrtelefon);
-        String cnpp = cnp.getText();
-        String nm = nume.getText();
-        String pn = prenume.getText();
-        if (model.verifNume(nm) && model.verifCnp(cnpp) && model.verificaTel(nrtelefon)) {
+
+        /* if (model.verifNume(nm) && model.verifCnp(cnpp) && model.verificaTel(nrtelefon)) {
             model.adauga(nm, pn, temp, cnpp);
             golireText();
             cautare.setEnabled(true);
             sort.setEnabled(true);
             modif.setEnabled(true);
             stergere.setEnabled(true);
-        }
+        }*/
+        try {
+            Connection c = DriverManager.getConnection("jdbc:mysql://localhost/phonebookapp", "root", "");
+            Statement s = c.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet r = s.executeQuery("Select * from thelist");
+            String nm = nume.getText();
+            String pn = prenume.getText();
+            String cnpp = cnp.getText();
+            String tlf = tel.getText();
+            r.moveToInsertRow();
+            r.updateString("nume", nm);
+            r.updateString("prenume", pn);
+            r.updateString("cnp", cnpp);
+            r.updateString("telefon", tlf);
+            r.insertRow();
+            r.updateRow();
+            golireText();
+            cautare.setEnabled(true);
+            sort.setEnabled(true);
+            modif.setEnabled(true);
+            stergere.setEnabled(true);
+            r.close();
+            r = s.executeQuery("SELECT * from thelist");
+            ResultSetTableModel model = new ResultSetTableModel(r);
 
+            this.t.setModel(model);
+
+        } catch (SQLException ex) {
+            //Logger.getLogger(JDBC.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("eroare ");
+        }
 
     }//GEN-LAST:event_adaugareActionPerformed
 
     private void stergereActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stergereActionPerformed
-        if (model.getSize() == 0) {
-            System.out.println("e gol");
-        } else {
-            model.sterge(l.getSelectedIndex());
-        }
-        if (model.getSize() == 0) {
+        try {
+            //  if (model.ct.size()== 0) {
+            //     System.out.println("e gol");
+            //} else {*/
+            Connection c = DriverManager.getConnection("jdbc:mysql://localhost/phonebookapp", "root", "");
+            Statement s = c.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet r = s.executeQuery("Select * from thelist");
+            int i = t.getSelectedRow();
+            // r = s.executeUpdate("delete from thelist where ")
+            // }
+            /*if (model.getSize() == 0) {
             stergere.setEnabled(false);
             modif.setEnabled(false);
             cautare.setEnabled(false);
             sort.setEnabled(false);
+            }
+            /*  int i = t.getSelectedRow();
+            if(i>=0){
+            dStergere.setVisible(true);
+            labelStergere.setText("Doriti sa stergeti abonatul "+l.getValueAt(l.getSelectedRow(),0)+" "+ l.getValueAt(l.getSelectedRow(),1)+" ?");
+            }*/
+        } catch (SQLException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_stergereActionPerformed
 
@@ -604,12 +707,12 @@ public class GUI extends javax.swing.JFrame {
             sort.setEnabled(false);
             modif.setEnabled(false);
             stergere.setEnabled(false);
-            Abonat i = (Abonat) model.getElementAt(l.getSelectedIndex());
+            Abonat i = (Abonat) model.getElementAt(t.getSelectedRow());
             nume.setText(i.getNume());
             prenume.setText(i.getPrenume());
             tel.setText(i.getTell());
             cnp.setText(i.getCnp());
-            model.sterge(l.getSelectedIndex());
+            model.sterge(t.getSelectedRow());
         }
     }//GEN-LAST:event_modifActionPerformed
 
@@ -632,18 +735,6 @@ public class GUI extends javax.swing.JFrame {
     private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
         model.setSrt(4);
     }//GEN-LAST:event_jRadioButton4ActionPerformed
-
-    private void lAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_lAncestorAdded
-
-    }//GEN-LAST:event_lAncestorAdded
-
-    private void lValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lValueChanged
-
-    }//GEN-LAST:event_lValueChanged
-
-    private void lComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_lComponentAdded
-
-    }//GEN-LAST:event_lComponentAdded
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
@@ -679,11 +770,6 @@ public class GUI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         about.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void lKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lKeyPressed
-
-        //  model.sterge(l.getSelectedIndex());
-    }//GEN-LAST:event_lKeyPressed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         System.exit(0);
@@ -776,11 +862,10 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JRadioButton jRadioButton4;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JScrollPane jscroolpane;
     private javax.swing.JPasswordField keyreg;
-    private javax.swing.JList<String> l;
     private javax.swing.JMenu m0;
     private javax.swing.JMenu m1;
     private javax.swing.JMenu m3;
@@ -792,6 +877,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JDialog reg;
     private javax.swing.JButton sort;
     private javax.swing.JButton stergere;
+    private javax.swing.JTable t;
     private javax.swing.JTextField tel;
     // End of variables declaration//GEN-END:variables
 }
